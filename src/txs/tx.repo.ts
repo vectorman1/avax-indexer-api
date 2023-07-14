@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DatabaseConstants } from 'src/database/database.constants';
-import { Model } from 'mongoose';
+import { Model, PipelineStage } from 'mongoose';
 import { Block } from 'src/blocks/interfaces/block.interface';
 import { TxsPagedRequest } from 'src/txs/interfaces/txs.paged.request';
 import { PagedResponse } from 'src/common/interfaces/paged.response';
@@ -18,7 +18,7 @@ export class TxsRepo {
   ) {}
 
   async paged(req: TxsPagedRequest): Promise<PagedResponse<Transaction>> {
-    const pipeline = [];
+    const pipeline: PipelineStage[] = [];
     let f = {};
     if (req.address) {
       f = {
