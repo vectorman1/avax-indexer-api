@@ -15,5 +15,7 @@ COPY . .
 # Creates a "dist" folder with the production build
 RUN npm run build
 
+RUN echo "MONGO_DB_URI=$MONGO_DB_URI" >> .env
+
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
