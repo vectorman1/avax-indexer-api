@@ -55,52 +55,44 @@ export class TxsRepo {
         $match: f,
       },
       {
-        $project: {
-          transactions: req.address
-            ? {
-                $filter: {
-                  input: '$transactions',
-                  as: 'tx',
-                  cond: {
-                    $or: [
-                      {
-                        $eq: ['$$tx.from', req.address],
-                      },
-                      {
-                        $eq: ['$$tx.to', req.address],
-                      },
-                    ],
-                  },
-                },
-              }
-            : 1,
-        },
-      },
-      {
-        $sort: sort,
-      },
-      {
         $unwind: {
           path: '$transactions',
           preserveNullAndEmptyArrays: false,
         },
       },
       {
-        $replaceRoot: {
-          newRoot: '$transactions',
-        },
+        $match: req.address
+          ? {
+              $or: [
+                {
+                  'transactions.from': req.address,
+                },
+                {
+                  'transactions.to': req.address,
+                },
+              ],
+            }
+          : {},
       },
       {
-        $match: filterZeroTxs ? { value: { $ne: '0' } } : {},
+        $match: filterZeroTxs ? { 'transactions.value': { $ne: '0' } } : {},
       },
       {
         $facet: {
           data: [
             {
+              $sort: sort,
+            },
+            {
               $skip: req.page * req.limit,
             },
             {
               $limit: Number(req.limit),
+            },
+            {
+              $replaceRoot: {
+                newRoot: '$transactions',
+              },
             },
           ],
           count: [
@@ -111,14 +103,10 @@ export class TxsRepo {
         },
       },
       {
-        $unwind: {
-          path: '$count',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
         $set: {
-          total: '$count.count',
+          total: {
+            $arrayElemAt: ['$count.count', 0],
+          },
         },
       },
     );
