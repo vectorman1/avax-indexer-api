@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/app.module';
 import { config as loadEnv } from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 loadEnv();
 
@@ -19,6 +20,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('', app, document);
 
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
   await app.listen(3000);
 }
+
 bootstrap();

@@ -1,9 +1,16 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { TxsRepo } from 'src/txs/tx.repo';
 import { PagedResponse } from 'src/common/interfaces/paged.response';
 import { Transaction } from 'src/txs/interfaces/tx.interface';
-import { TxSortOptsEnum } from 'src/txs/interfaces/tx-sort-opts.enum';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { TxsPagedRequest } from 'src/txs/interfaces/txs.paged.request';
 
 @Controller()
 export class TxsController {
@@ -32,17 +39,12 @@ export class TxsController {
     description: `'blockNumber' or 'value'`,
     required: null,
   })
-  async paged(
-    @Query('page') page: number = 0,
-    @Query('limit') limit: number = 10,
-    @Query('address') address?: string,
-    @Query('sort') sort?: TxSortOptsEnum,
+  @UsePipes(ValidationPipe)
+  paged(
+    @Query()
+    req: TxsPagedRequest,
   ): Promise<PagedResponse<Transaction>> {
-    return this.txsRepo.paged({
-      page: Number(page),
-      limit: Number(limit),
-      sort,
-      address,
-    });
+    Logger.log(`${req.page}, ${req.limit}, ${req.address}, ${req.sort}`);
+    return this.txsRepo.paged(req);
   }
 }

@@ -29,6 +29,8 @@
     "@nestjs/platform-socket.io": "^10.0.5",
     "@nestjs/swagger": "^7.1.1",
     "@nestjs/websockets": "^10.0.5",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "dotenv": "^16.3.1",
     "ethers": "^6.6.3",
     "install": "^0.13.0",
