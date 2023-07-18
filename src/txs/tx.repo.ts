@@ -17,7 +17,10 @@ export class TxsRepo {
     private blocksModel: typeof Model<Block>,
   ) {}
 
-  async paged(req: TxsPagedRequest): Promise<PagedResponse<Transaction>> {
+  async paged(
+    req: TxsPagedRequest,
+    filterZeroTxs: boolean = false,
+  ): Promise<PagedResponse<Transaction>> {
     const pipeline: PipelineStage[] = [];
     let f = {};
     if (req.address) {
@@ -86,6 +89,9 @@ export class TxsRepo {
         $replaceRoot: {
           newRoot: '$transactions',
         },
+      },
+      {
+        $match: filterZeroTxs ? { value: { $ne: '0' } } : {},
       },
       {
         $facet: {
