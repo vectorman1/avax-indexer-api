@@ -19,7 +19,7 @@ export class TxsRepo {
 
   async paged(
     req: TxsPagedRequest,
-    filterZeroTxs: boolean = false,
+    filterZeroTxs = false,
   ): Promise<PagedResponse<Transaction>> {
     const pipeline: PipelineStage[] = [];
     let f = {};
@@ -77,13 +77,13 @@ export class TxsRepo {
         },
       },
       {
+        $sort: sort,
+      },
+      {
         $unwind: {
           path: '$transactions',
           preserveNullAndEmptyArrays: false,
         },
-      },
-      {
-        $sort: sort,
       },
       {
         $replaceRoot: {

@@ -3,13 +3,19 @@ import { TxsRepo } from 'src/txs/tx.repo';
 import { AddressDeltaAggregate } from 'src/addresses/interfaces/address-delta.aggregate';
 import { TxSortOptsEnum } from 'src/txs/interfaces/tx-sort-opts.enum';
 import { BigNumber } from '@ethersproject/bignumber';
+import { SortOrderEnum } from 'src/common/interfaces/sort';
 
 @Injectable()
 export class AddressesService {
   constructor(private readonly txsRepo: TxsRepo) {}
 
+  private sortFn = (sortDir: SortOrderEnum) =>
+    sortDir === SortOrderEnum.DESC
+      ? (a, b) => a.delta.sub(b.delta)
+      : (a, b) => b.delta.sub(a.delta);
+
   async getDeltaAddresses(
-    sortDir: string = 'desc',
+    sortDir: SortOrderEnum = SortOrderEnum.DESC,
   ): Promise<AddressDeltaAggregate[]> {
     const req = {
       address: '',
@@ -49,11 +55,7 @@ export class AddressesService {
       });
     });
 
-    const sortFn =
-      sortDir === 'desc'
-        ? (a, b) => a.delta.sub(b.delta)
-        : (a, b) => b.delta.sub(a.delta);
-    deltaAggs.sort(sortFn);
+    deltaAggs.sort(this.sortFn(sortDir));
 
     return deltaAggs
       .map((agg) => {
