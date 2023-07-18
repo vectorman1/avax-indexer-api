@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Logger,
   Query,
   UsePipes,
   ValidationPipe,
@@ -44,7 +43,6 @@ export class TxsController {
     @Query()
     req: TxsPagedRequest,
   ): Promise<PagedResponse<Transaction>> {
-    Logger.log(`${req.page}, ${req.limit}, ${req.address}, ${req.sort}`);
     return this.txsRepo.paged(req);
   }
 }
