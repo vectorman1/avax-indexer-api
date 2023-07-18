@@ -3,5 +3,5 @@ import { TxSortOptsEnum } from 'src/txs/interfaces/tx-sort-opts.enum';
 
 export interface TxsPagedRequest extends PagedRequest {
   address?: string;
-  sort: TxSortOptsEnum;
+  sort?: TxSortOptsEnum;
 }

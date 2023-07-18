@@ -9,13 +9,8 @@ import { SortOrderEnum } from 'src/common/interfaces/sort';
 export class AddressesService {
   constructor(private readonly txsRepo: TxsRepo) {}
 
-  private sortFn = (sortDir: SortOrderEnum) =>
-    sortDir === SortOrderEnum.DESC
-      ? (a, b) => a.delta.sub(b.delta)
-      : (a, b) => b.delta.sub(a.delta);
-
   async getDeltaAddresses(
-    sortDir: SortOrderEnum = SortOrderEnum.DESC,
+    sortDir: SortOrderEnum,
   ): Promise<AddressDeltaAggregate[]> {
     const req = {
       address: '',
@@ -55,15 +50,17 @@ export class AddressesService {
       });
     });
 
-    deltaAggs.sort(this.sortFn(sortDir));
+    let items = deltaAggs.sort(this.sortDescending);
 
-    return deltaAggs
-      .map((agg) => {
-        return {
-          address: agg.address,
-          delta: agg.delta.toString(),
-        };
-      })
-      .slice(0, 100);
+    if (sortDir == SortOrderEnum.ASC) {
+      items = items.reverse();
+    }
+
+    return items.slice(0, 100).map((agg) => ({
+      address: agg.address,
+      delta: agg.delta.toString(),
+    }));
   }
+
+  private sortDescending = (a, b) => b.delta.sub(a.delta);
 }
