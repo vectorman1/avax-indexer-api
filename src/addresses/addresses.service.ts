@@ -11,7 +11,6 @@ export class AddressesService {
   async getDeltaAddresses(
     sortDir: string = 'desc',
   ): Promise<AddressDeltaAggregate[]> {
-    const hasMore = true;
     const req = {
       address: '',
       sort: TxSortOptsEnum.BlockNumber,
@@ -20,8 +19,7 @@ export class AddressesService {
     };
 
     const deltas = new Map<string, BigNumber>();
-
-    while (hasMore) {
+    while (true) {
       const txs = await this.txsRepo.paged(req, true);
 
       txs.data.forEach((tx) => {
@@ -44,7 +42,6 @@ export class AddressesService {
     }
 
     const deltaAggs = [];
-
     deltas.forEach((value, key) => {
       deltaAggs.push({
         address: key,
