@@ -1,7 +1,13 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AddressesService } from 'src/addresses/addresses.service';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { SortOrderEnum } from 'src/common/interfaces/sort';
+import { AddressDeltaAggregateReqest } from 'src/addresses/interfaces/address-delta.request';
 
 @Controller()
 export class AddressesController {
@@ -15,9 +21,10 @@ export class AddressesController {
     description: `'asc' or 'desc'`,
     required: null,
   })
+  @UsePipes(ValidationPipe)
   async getBalanceDeltas(
-    @Query('sortDir') sortDir: SortOrderEnum,
+    @Query() req: AddressDeltaAggregateReqest,
   ): Promise<any> {
-    return await this.addressesService.getDeltaAddresses(sortDir);
+    return await this.addressesService.getDeltaAddresses(req.sortDir);
   }
 }
